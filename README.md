@@ -1,5 +1,5 @@
 ## SU25 IS601-850 Module 4: Intro to Design Patterns
-![Coverage Badge](https://github.com/lcphutchinson/is601_4/actions/workflows/ci.yml/badge.svg)
+![Coverage Badge](https://github.com/lcphutchinson/is601_5/actions/workflows/ci.yml/badge.svg)
 
 A module of Web Systems Development, by Keith Williams
 
