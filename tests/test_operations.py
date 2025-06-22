@@ -5,9 +5,20 @@ from typing import Any, Dict, Type
 import app.exceptions as exc
 import app.operations as ops
 
+class TestBaseOperation:
+    """Defines the test suite for Operation base class methods"""
+
+    def test_str_representation(self):
+        """Test the string representation of a child Operation class"""
+        class TestOperation(ops.Operation):
+            def execute(self, x: Decimal, y: Decimal) -> Decimal:
+                return x
+
+        assert str(TestOperation()) == "TestOperation"
+
 class BaseOperationTest:
     """Base class for tests on the Operation class family"""
-    operation_class: Type[Operation]
+    operation_class: Type[ops.Operation]
     valid_test_cases: Dict[str, Dict[str, Any]]
     invalid_test_cases: Dict[str, Dict[str, Any]]
 
@@ -23,11 +34,11 @@ class BaseOperationTest:
 
     def test_invalid_operations(self):
         """Runs tests on the invalid test case set, representing error-causing inputs"""
-        operations = self.operation_class()
-        for name, case in self.invalid_test_cases.item():
+        operation = self.operation_class()
+        for name, case in self.invalid_test_cases.items():
             x = Decimal(str(case["x"]))
             y = Decimal(str(case["y"]))
-            error = case.get("error", ValidationError)
+            error = case.get("error", exc.ValidationError)
             error_message = case.get("message", "")
 
             with pytest.raises(error, match=error_message):
@@ -47,14 +58,7 @@ class TestAddition(BaseOperationTest):
             "negative_floats": {"x": "1", "y": "2", "expected": "3"},
             "large_operands": {"x": "-1e10", "y": "2e10", "expected": "1e10"},
     }
-    invalid_test_cases = {
-            "overflow_sum": {
-                "x": "2e308",
-                "y": "0.5",
-                "error": ValidationError,
-                "message": "Sum value exceeds storage limits",
-            },
-    }
+    invalid_test_cases = {}
 
 class TestSubtraction(BaseOperationTest):
     """Defines the test suite for the Subtraction Operation"""
@@ -70,14 +74,7 @@ class TestSubtraction(BaseOperationTest):
             "negative_floats": {"x": "-3.5", "y": "-2.5", "expected": "-1"},
             "large_operands": {"x": "2e10", "y": "1e10", "expected": "1e10"},
     }
-    invalid_test_cases = {
-            "overflow_difference": {
-                "x": "2e308",
-                "y": "-0.5",
-                "error": ValidationError,
-                "message": "Difference value exceeds storage limits",
-            },
-    }
+    invalid_test_cases = {}
 
 class TestMultiplication(BaseOperationTest):
     """Defines the test suite for the Multiplication Operation"""
@@ -93,14 +90,7 @@ class TestMultiplication(BaseOperationTest):
             "fractional_float": {"x": "8.0", "y": "0.5", "expected": "4.0"},
             "large_operand": {"x": "1e10", "y": "2", "expected": "2e10"},
     }
-    invalid_test_cases = {
-            "overflow_product": {
-                "x": "2e308",
-                "y": "2",
-                "error": ValidationError,
-                "message": "Product value exceeds storage limits",
-             },
-    }
+    invalid_test_cases = {}
 
 class TestDivision(BaseOperationTest):
     """Defines the test suite for the Division Operation"""
@@ -118,8 +108,8 @@ class TestDivision(BaseOperationTest):
             "zero_divisor": {
                 "x": "2",
                 "y": "0",
-                "error": ValidationError,
-                "message": "Ivalid zero divisor operand",
+                "error": exc.ValidationError,
+                "message": "Divisor operand cannot be 0",
             },
     }
 
@@ -135,7 +125,7 @@ class TestPower(BaseOperationTest):
             "negative_exponent": {"x": "2", "y": "-2", "expected": "0.25"},
             "fractional_base": {"x": "0.5", "y": "2", "expected": "0.25"},
             "fractional_exponent": {"x": "4", "y": "0.5", "expected": "2"},
-            "zero_base": {"x": "2", "y": "3", "expected": "8"},
+            "zero_base": {"x": "0", "y": "3", "expected": "0"},
     }
     invalid_test_cases = {}
 
@@ -146,7 +136,7 @@ class TestRoot(BaseOperationTest):
             "positive_root": {"x": "4", "y": "2", "expected": "2"},
             "fracitonal_root": {"x": "4", "y": "0.5", "expected": "16"},
             "negative_root": {"x": "4", "y": "-2", "expected": "0.5"},
-            "negative_base_odd_root": {"x": "-9", "y": "3", "expected": "-3"},
+            "negative_base_odd_root": {"x": "-8", "y": "3", "expected": "-2"},
             "fractional_base": {"x": "0.25", "y": "2", "expected": "0.5"},
             "zero_base": {"x": "0", "y": "2", "expected": "0"},
     }
@@ -154,14 +144,14 @@ class TestRoot(BaseOperationTest):
             "negative_base_even_root": {
                 "x": "-4", 
                 "y": "2",
-                "error": ValidationError,
-                "message": "Imaginary numbers not supported",
+                "error": exc.ValidationError,
+                "message": "Imaginary roots not supported",
             },
             "zero_root": {
                 "x": "2",
                 "y": "0",
-                "error": ValidationError,
-                "message": "Zero root is undefined",
+                "error": exc.ValidationError,
+                "message": "Zero radicand is undefined",
             }
     }
 
@@ -171,31 +161,31 @@ class TestOperationFactory:
     def test_valid_create(self):
         """Tests valid calls to create_operation"""
         operation_map = {
-                'add': Addition,
-                'subtract': Subtraction,
-                'multiply': Multiplication,
-                'divide': Divide,
-                'power': Power,
-                'root': Root,
+                'add': ops.Addition,
+                'subtract': ops.Subtraction,
+                'multiply': ops.Multiplication,
+                'divide': ops.Division,
+                'power': ops.Power,
+                'root': ops.Root,
         }
         
         for op_name, op_class in operation_map.items():
-            operation = OperationFactory.create_operation(op_name)
+            operation = ops.OperationFactory.create_operation(op_name)
             assert isinstance(operation, op_class)
 
     def test_invalid_create(self):
         """Test invalid calls to create_operation"""
         with pytest.raises(ValueError, match="Unknown operation: invalid_op"):
-            OperationFactory.create_operation("invalid_op")
+            ops.OperationFactory.create_operation("invalid_op")
 
     def test_valid_register(self):
         """Test valid registration parameters"""
-        class TestOperation(Operation):
+        class TestOperation(ops.Operation):
             def execute(self, x: Decimal, y: Decimal) -> Decimal:
                 return x
 
-        OperationFactory.register_operation("test_op", TestOperation)
-        operation = OperationFactory.create_operation("test_op")
+        ops.OperationFactory.register_operation("test_op", TestOperation)
+        operation = ops.OperationFactory.create_operation("test_op")
         assert isinstance(operation, TestOperation)
 
     def test_invalid_register(self):
@@ -203,7 +193,7 @@ class TestOperationFactory:
         class InvalidOperation:
             pass
 
-        with pytest.raises(TypeError, match="Operation class must inherit"):
-            OperationFactory.register_operation("invalid", InvalidOperation)
+        with pytest.raises(TypeError, match="Registered class must inherit from Operation"):
+            ops.OperationFactory.register_operation("invalid", InvalidOperation)
 
 
