@@ -4,8 +4,9 @@ class CalculatorError(Exception):
     """Base exception class for errors concerning Calculator components"""
     pass
 
-#class ConfigurationError(CalculatorError):
-#    pass
+class ConfigurationError(CalculatorError):
+    """Raised when encountering invalid configuration settings"""
+    pass
 
 class SerializationError(CalculatorError):
     """
