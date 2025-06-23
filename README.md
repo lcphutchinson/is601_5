@@ -1,4 +1,4 @@
-## SU25 IS601-850 Module 4: Intro to Design Patterns
+## SU25 IS601-850 Module 5: Advanced Design Patterns
 ![Coverage Badge](https://github.com/lcphutchinson/is601_5/actions/workflows/ci.yml/badge.svg)
 
 A module of Web Systems Development, by Keith Williams
@@ -212,74 +212,108 @@ Launch the calculator with Python:
 python3 main.py
 ```
 
-Module 3's Calculator supports four arithmetic operations
+Module 3's Calculator supports six arithmetic operations
 
 ```bash
-add \<x\> \<y\>: Adds two operands, x and y.
-subtract \<x\> \<y\>: Subtracts an operand y from another operand x.
-multiply \<x\> \<y\>: Multiplies two operands, x and y.
-divide \<x\> \<y\>: Divides a non-zero operand y from another operand x.
+add: Adds two operands, x and y.
+subtract: Subtracts an operand y from another operand x.
+multiply: Multiplies two operands, x and y.
+divide: Divides a non-zero operand y from another operand x.
+power: Raises an operand x to the nth power, where n == operand y
+root: Produces the nth root of operand x, where n == operand y
 ```
 
-After each valid command, a prefaced result value will be printed to the terminal, followed by another prompt:
+New in v.1.5, Arithmetic operations are called without operands and will request operands in a followup dialogue.
+ 
+```bash
+>>$: add
+Enter operands for command 'add', or 'cancel' to abort:
+>> operandx: 8
+>> operandy: 6
+Result: 14
+>>$:
+```
+
+All arithmetic commands can be cancelled during their operand input promps
 
 ```bash
->>: add 2 3
-Result: AddCalculation: 2.0 Add 3.0 = 5.0
->>: 
+>>$: subtract
+Enter operands for command 'subtract', or 'cancel' to abort:
+>> operandx: cancel
+subtract cancelled
+>>$:
 ```
 
 If a command is not parsable or otherwise invalid, an error message will be shown, but the program will not terminate:
 
 ```bash
->>: nonsense
-Error: Invalid Command Syntax. Expected <command> <x> <y>
->>:
+>>$: nonsense
+Unknown command: 'nonsense'. Type 'help' for available commands.
+>>$:
 ```
 
 New in v.1.4: Use the special command 'history' to display a log of operations from this session.
 ```bash
->>: history
+>>$: history
 Calculation History
 -------------------
-1. AddCalculation: 2.0 Add 3.0 = 5.0
->>:
+1. Addition(8, 6) = 14
+>>$:
 ```
 
-To display a full command list with more examples, use the special command 'help'
+To display a full command list use the special command 'help'
 ```bash
->>: help
-
-Python Calculator REPL
-----------------------
-Usage:
-    <command> <x> <y>
-    - Perform an arithmetic calculation <command> on operands <x> and <y>
-    - All operands must be float-parsible (integer or decimal)
-    - Supported commands:
-        add     : Adds two operands
-        subtract: Subtracts operand <y> from <x>
-        multiply: Multiplies two operands
-        divide  : Divides operand <x> by <y>
-
-Special Commands:
-    exit    : Exit the calculator
-    help    : Displays this help message
-    history : Displays a calculation history for this session
-
-Examples:
-    add 2 3
-    subtract 4.5 2
-    multiply 3 4
-    divide 12 6
-    exit
+>>$: help
+Available Commands
+------------------
+add, subtract, multiply, divide, power, root -- Perform calculations
+history - Display your calculation history
+clear - Clear your calculation history
+undo - Undo your last calculation
+redo - Redo the last undone calculation
+save - Save calculation history to file
+load - Load calculation history from file
+exit - Exit the calculator
+>>$:
 ```
 
-To exit the program, type the command `exit`:
+New to v.1.5, the 'undo' and 'redo' commands walk backwards and forward through the operation history
 
 ```bash
->>: exit
+>>$: add
+Enter operands for command 'add', or 'cancel' to abort:
+>> operandx: 8
+>> operandy: 6
+Result: 14
+>>$: undo
+Undo successful
+>>$: history
+No history to display
+>>$: redo
+Redo successful
+>>$: history
+Calculation History
+-------------------
+1. Addition(8, 6) = 14
+>>$:
+```
+
+v.1.5's 'save' and 'load' commands record and retrieve your operation history from disk, 
+and it's 'clear' command wipes system's history and undo/redo stacks.
+
+```bash
+>>$: clear
+History cleared
+>>$: undo
+Nothing to undo
+>>$:
+```
+
+To exit the program, use the command `exit`. By default, the system will save your current history.
+
+```bash
+>>$: exit
+History saved successfully.
 Thank you for using Python REPL Calculator. Exiting...
-you@yourPC:~/is601_3
 ```
 
