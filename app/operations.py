@@ -1,10 +1,10 @@
 """This module provides a class structure for composing and executing arithmetic operations"""
 
 from abc import ABC, abstractmethod
-from decimal import Decimal, Overflow, Underflow
+from decimal import Decimal
 from typing import Dict
 
-from app.exceptions import OperationError, ValidationError
+from app.exceptions import ValidationError
 
 class Operation(ABC):
     """
