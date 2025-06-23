@@ -81,7 +81,7 @@ class Calculation:
         try:
             mock_op = OperationFactory.create_operation(self.operation)
             mock_result = mock_op.execute(self.operandx, self.operandy)\
-                .quantize(Decimal('0.' + '0' * self.precision)).normalize()
+                .quantize(Decimal('0.' + '0' * int(self.precision))).normalize()
         except ValueError:
             raise SerializationError("Data record contains an invalid operation tag")
         except ValidationError as e:

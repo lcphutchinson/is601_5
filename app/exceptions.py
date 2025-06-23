@@ -8,6 +8,10 @@ class ConfigurationError(CalculatorError):
     """Raised when encountering invalid configuration settings"""
     pass
 
+class OperationError(CalculatorError):
+    """Raised when a calculation is initiated but cannot be complete"""
+    pass
+
 class SerializationError(CalculatorError):
     """
     Raised when data serialization or deserialization fails.
@@ -18,4 +22,5 @@ class SerializationError(CalculatorError):
     pass
 
 class ValidationError(CalculatorError):
+    """Raised when invalid operands are passed to the Operation module"""
     pass

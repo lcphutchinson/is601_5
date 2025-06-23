@@ -244,9 +244,13 @@ class OperationFactory:
 
     _operations: Dict[str, type] = {
             'add': Addition,
+            'addition': Addition,
             'subtract': Subtraction,
+            'subtraction': Subtraction,
             'multiply': Multiplication,
+            'multiplication': Multiplication,
             'divide': Division,
+            'division': Division,
             'power': Power,
             'root': Root,
     }
